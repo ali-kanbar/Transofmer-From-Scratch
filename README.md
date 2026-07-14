@@ -13,9 +13,9 @@ It reads the whole thing and predicts: **positive**.
 ## How it works, briefly
 
 - **Tokenizer**: splits text into words, keeps the 8,000 most common ones, everything else becomes `<unk>`.
-- **`<cls>` token**: a special token stuck at the front of every review. After the model reads the whole review, this token's output is used as a summary of the whole thing — that summary is what gets classified.
-- **Attention**: every word looks at every other word in the review (not just the words before it — the whole review is available at once, unlike a text-generating model).
-- **Classifier head**: takes that summary and outputs two numbers — how positive, how negative — and picks the higher one.
+- **`<cls>` token**: a special token stuck at the front of every review. After the model reads the whole review, this token's output is used as a summary of the whole thing, that summary is what gets classified.
+- **Attention**: every word looks at every other word in the review (not just the words before it, the whole review is available at once, unlike a text-generating model).
+- **Classifier head**: takes that summary and outputs two numbers, how positive, how negative, and picks the higher one.
 
 ## Results
 
@@ -33,12 +33,3 @@ pip install torch requests
 ## How to run
 
 Open `sentiment_transformer_from_scratch.ipynb` in Jupyter or Google Colab and run the cells top to bottom. It downloads the dataset itself, no manual setup needed.
-
-## Want better accuracy?
-
-Two easy changes, both marked in the training cell:
-
-1. Run on a GPU (Colab's free tier works).
-2. Use the full dataset instead of the 8,000-review subset — just remove the `n=` limits in the data cell.
-
-Bigger model + more data + more training steps = better accuracy, same as it is for any ML model.
