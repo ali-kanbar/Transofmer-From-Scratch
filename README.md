@@ -21,7 +21,6 @@ It reads the whole thing and predicts: **positive**.
 
 - 0.63M parameters
 - Trained on 8,000 reviews, tested on 2,000
-- ~5.5 minutes on a single CPU core
 - **85.5% accuracy** on reviews it never saw during training
 
 ## Requirements
