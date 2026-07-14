@@ -14,7 +14,7 @@ It reads the whole thing and predicts: **positive**.
 
 - **Tokenizer**: splits text into words, keeps the 8,000 most common ones, everything else becomes `<unk>`.
 - **`<cls>` token**: a special token stuck at the front of every review. After the model reads the whole review, this token's output is used as a summary of the whole thing, that summary is what gets classified.
-- **Attention**: every word looks at every other word in the review (not just the words before it, the whole review is available at once, unlike a text-generating model).
+- **Attention**: every word looks at every other word in the review (not just the words before it, the whole review is available at once).
 - **Classifier head**: takes that summary and outputs two numbers, how positive, how negative, and picks the higher one.
 
 ## Results
