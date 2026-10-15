@@ -1,34 +1,78 @@
-# Sentiment Transformer (from scratch)
+# Transformer from Scratch
 
-A small transformer, built from raw PyTorch (no pretrained models, no shortcuts), that reads a movie review and says positive or negative.
+A small transformer that classifies movie reviews as **positive** or **negative**.
 
-## What it does
+The tokenizer, self-attention and encoder blocks are written in Python and PyTorch. The model is trained from scratch on IMDB reviews, without pretrained weights or `nn.Transformer`.
 
-You give it text like:
+## How it works
 
-> "An absolute masterpiece, beautifully shot with a gripping story."
+1. Clean the review, lowercase it and split it into tokens.
+2. Convert the tokens to IDs, add `<cls>` at the beginning and pad shorter reviews.
+3. Add token and position embeddings, then pass them through two transformer blocks.
+4. Use the final `<cls>` vector to predict sentiment. Softmax converts the two output scores into probabilities.
 
-It reads the whole thing and predicts: **positive**.
+Attention can look at the whole review in both directions. Padding positions are masked out.
 
-## How it works, briefly
+| Setting | Value |
+| --- | --- |
+| Vocabulary limit | 8,000 tokens, including special tokens |
+| Review length | Up to 200 tokens, plus `<cls>` |
+| Embedding size | 64 |
+| Transformer blocks | 2 |
+| Attention heads per block | 4 |
+| Dropout | 0.1 |
 
-- **Tokenizer**: splits text into words, keeps the 8,000 most common ones, everything else becomes `<unk>`.
-- **`<cls>` token**: a special token stuck at the front of every review. After the model reads the whole review, this token's output is used as a summary of the whole thing, that summary is what gets classified.
-- **Attention**: every word looks at every other word in the review (not just the words before it, the whole review is available at once, unlike a text-generating model).
-- **Classifier head**: takes that summary and outputs two numbers, how positive, how negative, and picks the higher one.
+## Examples
 
-## Results
+**A positive sentence**
 
-- 0.63M parameters
-- Trained on 8,000 reviews, tested on 2,000
-- **85.5% accuracy** on reviews it never saw during training
+![Positive prediction for the sentence I enjoyed the movie](images/positive-example.png)
 
-## Requirements
+**A mixed sentence**
 
+![Negative prediction for the sentence It was okay, not great but not terrible either](images/mixed-example.png)
+
+The second example shows a limitation: a fairly neutral sentence gets a strongly negative prediction. There is no neutral class, and a high model probability does not guarantee a correct answer.
+
+## Training
+
+The notebook downloads the [IMDB review CSV](https://raw.githubusercontent.com/Ankit152/IMDB-sentiment-analysis/master/IMDB-Dataset.csv), shuffles the data and builds the vocabulary from the training split.
+
+To keep the experiment small, training uses 8,000 reviews and a validation subset of 2,000 reviews. It runs for 1,000 updates with a batch size of 32, AdamW and a starting learning rate of `1e-3`.
+
+Validation is checked on 10 random batches every 100 steps. The best weights are kept in memory and restored at the end. This is a sampled validation score, not accuracy on a separate test set.
+
+## Run it
+
+Install the packages for a local Jupyter session:
+
+```bash
+python -m pip install torch requests matplotlib notebook
+jupyter notebook Transformer_from_Scratch.ipynb
 ```
-pip install torch requests
+
+You can also open the notebook in Google Colab. Run the cells from top to bottom; the dataset downloads automatically.
+
+After training, try your own sentence:
+
+```python
+label, probability = predict("I enjoyed the movie")
+print(f"{label}: {probability:.1%}")
 ```
 
-## How to run
+For the plots, place `sentiment_visualization.py` beside the notebook and run this in a new notebook cell:
 
-Open `sentiment_transformer_from_scratch.ipynb` in Jupyter or Google Colab and run the cells top to bottom. It downloads the dataset itself, no manual setup needed.
+```python
+%run -i sentiment_visualization.py
+```
+
+It asks for a sentence and saves the architecture diagram and prediction chart in `images/`. To save another example:
+
+```python
+result = visualize_sentiment(
+    "I enjoyed the movie",
+    filename="images/positive-example.png"
+)
+```
+
+The model is trained on movie reviews, so results on other kinds of text may be less reliable. Long inputs are cut to the first 200 tokens, and words outside the vocabulary become `<unk>`.
