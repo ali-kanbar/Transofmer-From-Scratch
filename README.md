@@ -26,11 +26,11 @@ Attention can look at the whole review in both directions. Padding positions are
 
 **A positive sentence**
 
-![Positive prediction for the sentence I enjoyed the movie](images/positive-example.png)
+<img width="807" height="443" alt="image" src="https://github.com/user-attachments/assets/e6447422-0b1a-4c74-8c47-3d1a4fbab706" />
 
 **A mixed sentence**
 
-![Negative prediction for the sentence It was okay, not great but not terrible either](images/mixed-example.png)
+<img width="862" height="443" alt="image" src="https://github.com/user-attachments/assets/42f254b4-0fe5-451f-be4b-b6fbfea9d295" />
 
 The second example shows a limitation: a fairly neutral sentence gets a strongly negative prediction. There is no neutral class, and a high model probability does not guarantee a correct answer.
 
